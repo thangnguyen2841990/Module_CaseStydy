@@ -31,8 +31,11 @@ public interface ICustomerManagement extends GeneralManagement<Customer>, WriteF
     void addCustomerBuyStory(CustomerBuyStory customerBuyStory);
     void displayCustomerBuyStory();
     void clearCustomerBuyStory();
+    void updateCustomerBuyStory(int index, CustomerBuyStory customerBuyStory);
     int totalPayMoneyCustomerBuyStory();
     int payMoneyCustomerBuyStory(int index, int quanlity);
+    int getSizeCustomerStory();
+    void removeCustomerBuyStory(int index);
     void readFileCustomerBuyStory(String path) throws IOException, ClassNotFoundException;
     void WriteFileCustomerBuyStory(String path) throws IOException;
     void addOrderStory(OrderStory orderStory);

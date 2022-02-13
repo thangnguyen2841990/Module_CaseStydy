@@ -257,6 +257,11 @@ public class CustomerManagement extends Thread implements ICustomerManagement {
     }
 
     @Override
+    public void updateCustomerBuyStory(int index, CustomerBuyStory customerBuyStory) {
+        customerBuyStoryList.set(index,customerBuyStory);
+    }
+
+    @Override
     public int totalPayMoneyCustomerBuyStory() {
         int total = 0;
         for (int i = 0; i < customerBuyStoryList.size(); i++) {
@@ -270,6 +275,16 @@ public class CustomerManagement extends Thread implements ICustomerManagement {
         int payMoney = 1;
         payMoney = storyManagement.getByIndex(index).getPrice() * quanlity;
         return payMoney;
+    }
+
+    @Override
+    public int getSizeCustomerStory() {
+        return customerBuyStoryList.size();
+    }
+
+    @Override
+    public void removeCustomerBuyStory(int index) {
+        customerBuyStoryList.remove(index);
     }
 
     @Override
