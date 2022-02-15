@@ -3,7 +3,7 @@ package com.codegym.controller.customer;
 import com.codegym.controller.story.IStoryManagement;
 import com.codegym.controller.story.StoryManagement;
 import com.codegym.model.*;
-import jdk.internal.util.xml.impl.Input;
+import com.sun.corba.se.spi.orbutil.fsm.Input;
 
 import java.io.*;
 import java.text.ParseException;
@@ -14,22 +14,7 @@ import java.util.concurrent.TimeUnit;
 public class CustomerManagement extends Thread implements ICustomerManagement {
     private List<Customer> customerList = new ArrayList<>();
     private List<Transaction> transactionList = new ArrayList<>();
-    private List<CustomersByAppointment> customersByAppointments = new ArrayList<>();
-    private List<CustomerBuyStory> customerBuyStoryList = new ArrayList<>();
-    private IStoryManagement storyManagement = StoryManagement.getInstance();
-    private List<OrderStory> orderStoryList = new ArrayList<>();
-
     public static final CustomerManagement INSTANCE = new CustomerManagement();
-
-
-    public List<Customer> getCustomerList() {
-        return customerList;
-    }
-
-    public void setCustomerList(List<Customer> customerList) {
-        this.customerList = customerList;
-    }
-
 
     private CustomerManagement() {
     }
@@ -37,6 +22,7 @@ public class CustomerManagement extends Thread implements ICustomerManagement {
     public static CustomerManagement getInstance() {
         return INSTANCE;
     }
+
 
     @Override
     public void add(Customer customer) {
@@ -73,7 +59,7 @@ public class CustomerManagement extends Thread implements ICustomerManagement {
 
     @Override
     public Customer getByIndex(int index) {
-        return  customerList.get(index);
+        return customerList.get(index);
     }
 
     @Override
@@ -126,7 +112,7 @@ public class CustomerManagement extends Thread implements ICustomerManagement {
         } else if (daysDiff > 5 && daysDiff <= 10) {
             payMoney = 5000 * daysDiff;
         } else if (daysDiff > 10 && daysDiff <= 15) {
-            payMoney = 10000 % daysDiff;
+            payMoney = 10000 * daysDiff;
         } else if (daysDiff > 15) {
             payMoney = 20000 * daysDiff;
         }
@@ -173,38 +159,6 @@ public class CustomerManagement extends Thread implements ICustomerManagement {
 
 
     @Override
-    public void writeFileCustomerByAppointment(String path) throws IOException {
-        OutputStream os = new FileOutputStream("customerByAppointment.txt");
-        ObjectOutputStream oos = new ObjectOutputStream(os);
-        oos.writeObject(this.customersByAppointments);
-
-    }
-
-    @Override
-    public void readFileCustomerByAppointment(String path) throws IOException, ClassNotFoundException {
-        InputStream is = new FileInputStream("customerByAppointment.txt");
-        ObjectInputStream ois = new ObjectInputStream(is);
-        this.customersByAppointments = (List<CustomersByAppointment>) ois.readObject();
-    }
-
-    @Override
-    public void addNewCustomerByAppointment(CustomersByAppointment newCustomer) {
-        customersByAppointments.add(newCustomer);
-    }
-
-    @Override
-    public void displayAllCustomerByAppointment() {
-        for (CustomersByAppointment customer : customersByAppointments) {
-            System.out.println(customer);
-        }
-    }
-
-    @Override
-    public void clearAllCustomerAppointment() {
-        this.customersByAppointments.clear();
-    }
-
-    @Override
     public void writeFileTransaction(String path) throws IOException {
         OutputStream os = new FileOutputStream(path);
         ObjectOutputStream oos = new ObjectOutputStream(os);
@@ -235,108 +189,6 @@ public class CustomerManagement extends Thread implements ICustomerManagement {
         long total = 0;
         for (int i = 0; i < transactionList.size(); i++) {
             total = total + transactionList.get(i).getPayMoney();
-        }
-        return total;
-    }
-
-    @Override
-    public void addCustomerBuyStory(CustomerBuyStory customerBuyStory) {
-        customerBuyStoryList.add(customerBuyStory);
-    }
-
-    @Override
-    public void displayCustomerBuyStory() {
-        for (int i = 0; i < customerBuyStoryList.size(); i++) {
-            System.out.println((i + 1) + " - " + customerBuyStoryList.get(i));
-        }
-    }
-
-    @Override
-    public void clearCustomerBuyStory() {
-        customerBuyStoryList.clear();
-    }
-
-    @Override
-    public void updateCustomerBuyStory(int index, CustomerBuyStory customerBuyStory) {
-        customerBuyStoryList.set(index,customerBuyStory);
-    }
-
-    @Override
-    public int totalPayMoneyCustomerBuyStory() {
-        int total = 0;
-        for (int i = 0; i < customerBuyStoryList.size(); i++) {
-            total = total + customerBuyStoryList.get(i).getPayMoney();
-        }
-        return total;
-    }
-
-    @Override
-    public int payMoneyCustomerBuyStory(int index, int quanlity) {
-        int payMoney = 1;
-        payMoney = storyManagement.getByIndex(index).getPrice() * quanlity;
-        return payMoney;
-    }
-
-    @Override
-    public int getSizeCustomerStory() {
-        return customerBuyStoryList.size();
-    }
-
-    @Override
-    public void removeCustomerBuyStory(int index) {
-        customerBuyStoryList.remove(index);
-    }
-
-    @Override
-    public void readFileCustomerBuyStory(String path) throws IOException, ClassNotFoundException {
-        InputStream is = new FileInputStream(path);
-        ObjectInputStream ois   = new ObjectInputStream(is);
-        this.customerBuyStoryList  = (List<CustomerBuyStory>) ois.readObject();
-    }
-
-    @Override
-    public void WriteFileCustomerBuyStory(String path) throws IOException {
-        OutputStream os = new FileOutputStream(path);
-        ObjectOutputStream oos = new ObjectOutputStream(os);
-        oos.writeObject(this.customerBuyStoryList);
-    }
-
-    @Override
-    public void addOrderStory(OrderStory orderStory) {
-        orderStoryList.add(orderStory);
-    }
-
-    @Override
-    public void clearOrderStoryList() {
-    orderStoryList.clear();
-    }
-
-    @Override
-    public void showOrderStory() {
-        for (OrderStory orderStory: orderStoryList) {
-            System.out.println(orderStory);
-        }
-    }
-
-    @Override
-    public void writeFileOrderStory(String path) throws IOException {
-            OutputStream os = new FileOutputStream(path);
-            ObjectOutputStream oos = new ObjectOutputStream(os);
-            oos.writeObject(this.orderStoryList);
-    }
-
-    @Override
-    public void readFileOrderStory(String path) throws IOException, ClassNotFoundException {
-            InputStream is = new FileInputStream(path);
-            ObjectInputStream ois = new ObjectInputStream(is);
-            this.orderStoryList = (List<OrderStory>) ois.readObject();
-    }
-
-    @Override
-    public int totalOrderStory() {
-        int total = 0;
-        for (int i = 0; i < orderStoryList.size(); i++) {
-            total = total + orderStoryList.get(i).getPayMoney();
         }
         return total;
     }

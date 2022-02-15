@@ -39,6 +39,6 @@ public class CustomerBuyStory implements Serializable {
 
     @Override
     public String toString() {
-        return story.toString() +" - Số lượng: " + this.quanlity + ", Thành tiền: "+ this.payMoney;
+        return story.toString()  +" - Số lượng: "+ this.quanlity +" -  Thành tiền: " + this.payMoney+"(VND.)";
     }
 }

@@ -31,28 +31,12 @@ public class UserLogin {
             menu();
             System.out.println("Nhập lựa chọn của bạn: ");
             choice = inputNumber.nextInt();
-            if (choice > 3) {
-                System.out.println("UserLogin chỉ có 1 - 3!");
+            if (choice > 4) {
+                System.err.println("UserLogin chỉ có từ 1 - 4!");
             }
             switch (choice) {
                 case 1: {
-                    System.out.println("----Đăng nhập----");
-                    System.out.println("Nhập tên tài khoản: ");
-                    String username = inputString.nextLine();
-                    System.out.println("Nhập mật khẩu: ");
-                    String password = inputString.nextLine();
-                    boolean isAdminLogin = userAdminManagement.checkLogin(username, password);
-                    boolean isStaffLogin = userStaffManagement.checkLogin(username, password);
-                    boolean isCustomerLogin = userCustomerManagement.checkLogin(username, password);
-                    if (isAdminLogin) {
-                        adminManagementMenu.run();
-                    } else if (isStaffLogin) {
-                        staffManagementMenu.run();
-                    } else if (isCustomerLogin) {
-                        customerManagementmenu.run();
-                    } else {
-                        System.err.println("Tên tài khoản hoặc mật khẩu không đúng!");
-                    }
+                    doLogin(userAdminManagement, userStaffManagement, userCustomerManagement, adminManagementMenu, staffManagementMenu, customerManagementmenu);
                     break;
                 }
                 case 2: {
@@ -63,10 +47,42 @@ public class UserLogin {
                     doChangePassword(userCustomerManagement);
                     break;
                 }
+                case 4 : {
+                    System.out.println("----Lấy lại mật khẩu----");
+                    System.out.println("Nhập tên tài khoản: ");
+                    String username = inputString.nextLine();
+                    int index = userCustomerManagement.findUserByUsername(username);
+                    if (index == -1){
+                        System.err.println("Tên tài khoản không đúng!");
+                    }else{
+                        System.out.println(userCustomerManagement.getByIndex(index));
+
+                    }
+                }
             }
             doWriteFileUserCustomer(userCustomerManagement);
         } while (choice != 0);
 
+    }
+
+    private void doLogin(IUserAdminManagement userAdminManagement, IUserStaffManagement userStaffManagement, IUserCustomerManagement userCustomerManagement, AdminManagementMenu adminManagementMenu, StaffManagementMenu staffManagementMenu, CustomerManagementmenu customerManagementmenu) {
+        System.out.println("----Đăng nhập----");
+        System.out.println("Nhập tên tài khoản: ");
+        String username = inputString.nextLine();
+        System.out.println("Nhập mật khẩu: ");
+        String password = inputString.nextLine();
+        boolean isAdminLogin = userAdminManagement.checkLogin(username, password);
+        boolean isStaffLogin = userStaffManagement.checkLogin(username, password);
+        boolean isCustomerLogin = userCustomerManagement.checkLogin(username, password);
+        if (isAdminLogin) {
+            adminManagementMenu.run();
+        } else if (isStaffLogin) {
+            staffManagementMenu.run();
+        } else if (isCustomerLogin) {
+            customerManagementmenu.run();
+        } else {
+            System.err.println("Tên tài khoản hoặc mật khẩu không đúng!");
+        }
     }
 
     private void doWriteFileUserCustomer(IUserCustomerManagement userCustomerManagement) {
@@ -96,6 +112,7 @@ public class UserLogin {
         System.out.println("1. Đăng nhập.");
         System.out.println("2. Đăng ký");
         System.out.println("3. Đổi mật khẩu.");
+        System.out.println("4. Lấy lại mật khẩu.");
         System.out.println("0. Thoát.");
     }
 

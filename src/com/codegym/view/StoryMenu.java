@@ -19,8 +19,8 @@ public class StoryMenu {
             menu();
             System.out.println("Nhập lựa chọn của bạn: ");
             choice = inputNumber.nextInt();
-            if (choice > 5 ){
-                System.out.println("UserLogin chỉ có từ 1 - 5!");
+            if (choice > 6 ){
+                System.out.println("UserLogin chỉ có từ 1 - 6!");
             }
             switch (choice) {
                 case 1 : {
@@ -42,6 +42,20 @@ public class StoryMenu {
                 case 5 : {
                     doFindStoryByID(storyManagement);
                     break;
+                }
+                case 6 : {
+                    System.out.println("Nhập má số truyện: ");
+                    String id = inputString.nextLine();
+                    int index = storyManagement.findById(id);
+                    if (index == -1 ){
+                        System.err.println("Mã số truyện không đúng!");
+                    } else {
+                        System.out.println("Nhập số lượng mới: ");
+                        int newQuanlity = inputNumber.nextInt();
+                        storyManagement.getByIndex(index).setQuanlity(newQuanlity);
+                        System.out.println("Cập nhật xong!");
+                    }
+                   break;
                 }
             }
             doWriteFile(storyManagement);
@@ -69,6 +83,7 @@ public class StoryMenu {
         System.out.println("3. Cập nhật thông tin truyện.");
         System.out.println("4. Xóa truyện.");
         System.out.println("5. Tìm truyện theo mã số.");
+        System.out.println("6. Cập nhật số lượng truyện.");
         System.out.println("0. Thoát.");
     }
 

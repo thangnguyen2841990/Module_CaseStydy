@@ -10,7 +10,7 @@ public class StaffManagementMenu {
         StoryMenu storyMenu = new StoryMenu();
         CustomerMenu customerMenu = new CustomerMenu();
         do {
-            System.out.println("----CỬA HÀNG CHO THUÊ TRUYỆN CODEGYM----");
+            System.out.println("----CỬA HÀNG BÁN & CHO THUÊ TRUYỆN CODEGYM----");
             System.out.println("1. Quản lý truyện.");
             System.out.println("2. Quản lý khách hàng.");
             System.out.println("0. Quay lại.");

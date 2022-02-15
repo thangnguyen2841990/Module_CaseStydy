@@ -1,14 +1,18 @@
 package com.codegym.view;
 
-import com.codegym.controller.customer.CustomerManagement;
-import com.codegym.controller.customer.ICustomerManagement;
+
+import com.codegym.controller.orderBuyStory.IOrderBuyStoryManagement;
+import com.codegym.controller.orderBuyStory.OrderBuyStoryManagement;
+import com.codegym.controller.orderRentStory.IOrderRentStoryManagement;
+import com.codegym.controller.orderRentStory.OrderRentStoryManagement;
+import com.codegym.controller.saveOrderBuystory.ISaveOrderBuyStoryManagement;
+import com.codegym.controller.saveOrderBuystory.SaveOrderBuyStoryManagement;
 import com.codegym.controller.story.IStoryManagement;
 import com.codegym.controller.story.StoryManagement;
 import com.codegym.model.CustomerBuyStory;
 import com.codegym.model.CustomersByAppointment;
-import com.codegym.model.OrderStory;
 import com.codegym.model.Story;
-import com.sun.xml.internal.bind.v2.runtime.output.SAXOutput;
+
 
 import java.io.IOException;
 import java.util.Scanner;
@@ -19,17 +23,31 @@ public class CustomerManagementmenu {
 
     public void run() {
         int choice = -1;
-        ICustomerManagement customerManagement = CustomerManagement.getInstance();
+        IOrderBuyStoryManagement orderBuyStoryManagement = OrderBuyStoryManagement.getInstance();
         IStoryManagement storyManagement = StoryManagement.getInstance();
-        doReadFileStory(storyManagement);
-        doReadFileCustomerByAppointment(customerManagement);
-        doReadFileCustomerBuyStory(customerManagement);
+        IOrderRentStoryManagement orderRentStoryManagement = OrderRentStoryManagement.getInstance();
+        ISaveOrderBuyStoryManagement saveOrderBuyStoryManagement = SaveOrderBuyStoryManagement.getInstance();
+        try {
+            storyManagement.readFile("story.txt");
+        } catch (IOException | ClassNotFoundException e) {
+
+        }
+        try {
+            orderRentStoryManagement.readFile("orderRentStory.txt");
+        } catch (IOException | ClassNotFoundException e) {
+
+        }
+        try {
+            orderBuyStoryManagement.readFile("customerBuyStory.txt");
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
         do {
             menu();
             System.out.println("Nhập lựa chọn của bạn: ");
             choice = inputNumber.nextInt();
-            if (choice > 5) {
-                System.out.println("UserLogin chỉ có từ 1 - 5!");
+            if (choice > 8) {
+                System.out.println("UserLogin chỉ có từ 1 - 8!");
             }
             switch (choice) {
                 case 1: {
@@ -40,101 +58,121 @@ public class CustomerManagementmenu {
                     System.out.println("Mượn từ trên 15 ngày 15000(VND)/1 ngày. ");
                     break;
                 }
-                case 2: {
-                    doOrderStory(customerManagement, storyManagement);
+                case 2 : {
+                    System.out.println("----DANH SÁCH TRUYỆN----");
+                    storyManagement.displayAll();
                     break;
                 }
                 case 3: {
-                    doShowOrderStory(customerManagement);
+                    doOrderStory(orderBuyStoryManagement, storyManagement,saveOrderBuyStoryManagement);
                     break;
                 }
                 case 4: {
-                    System.out.println("----Cập nhật đơn hàng----");
-                    int choiceUpdate = -1;
-                    do {
-                        System.out.println("1. Thay đổi số lượng, truyện muốn mua.");
-                        System.out.println("2. Xóa bớt truyện muốn mua,");
-                        System.out.println("3. Hủy đơn hàng.");
-                        System.out.println("0. Quay lại.");
-                        System.out.println("Nhập lựa chọn của bạn: ");
-                        choiceUpdate = inputNumber.nextInt();
-                        if (choiceUpdate > 3) {
-                            System.out.println("Menu chỉ có từ 1 - 3!");
-                        }
-                        switch (choiceUpdate) {
-                            case 1: {
-                                doShowOrderStory(customerManagement);
-                                System.out.println("Nhập số thứ tự sản phẩm cần cập nhật: ");
-                                int index = inputNumber.nextInt();
-                                int size = customerManagement.getSizeCustomerStory();
-
-                                if (index - 1 < 0 || index - 1 > size - 1) {
-                                    System.err.println("Số thứ tự sản phẩm không đúng!");
-                                } else {
-                                    CustomerBuyStory newCustomerBuyStory = creatOrderStory(storyManagement, customerManagement);
-                                    customerManagement.updateCustomerBuyStory(index - 1, newCustomerBuyStory);
-                                    doShowOrderStory(customerManagement);
-                                }
-                                break;
-                            }
-                            case 2: {
-                                doShowOrderStory(customerManagement);
-                                System.out.println("Nhập số thứ tự sản phẩm cần cập nhật: ");
-                                int index = inputNumber.nextInt();
-                                int size = customerManagement.getSizeCustomerStory();
-
-                                if (index - 1 < 0 || index - 1 > size - 1) {
-                                    System.err.println("Số thứ tự sản phẩm không đúng!");
-                                } else {
-                                    customerManagement.removeCustomerBuyStory(index - 1);
-                                    doShowOrderStory(customerManagement);
-                                }
-                                break;
-                            }
-                            case 3: {
-                                customerManagement.clearCustomerBuyStory();
-                                doShowOrderStory(customerManagement);
-                                break;
-                            }
-                        }
-                        doWriteFileCustomerBuyStory(customerManagement);
-                        doWriteFileOrderStory(customerManagement);
-                    } while (choiceUpdate != 0);
+                    doShowOrderStory(orderBuyStoryManagement);
                     break;
                 }
                 case 5: {
-                    doShowAllStory(storyManagement);
-                    doOrder(customerManagement);
+                    doUpdateCustomerBuyStory(orderBuyStoryManagement, storyManagement,saveOrderBuyStoryManagement);
                     break;
                 }
                 case 6: {
-                    doShowAllHistoryOrder(customerManagement);
+                    doShowAllStory(storyManagement);
+                    doOrder(orderRentStoryManagement);
                     break;
                 }
                 case 7: {
-                    doClearCustomerByAppointment(customerManagement);
+                    doShowAllHistoryOrder(orderRentStoryManagement);
                     break;
                 }
             }
-            writeFileCustomerByAppointment(customerManagement);
+            try {
+                storyManagement.writeFile("story.txt");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            try {
+                orderBuyStoryManagement.writeFile("customerBuyStory.txt");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            try {
+                orderRentStoryManagement.writeFile("orderRentStory.txt");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            try {
+                saveOrderBuyStoryManagement.writeFile("orderStory.txt");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         } while (choice != 0);
     }
 
-    private void doShowOrderStory(ICustomerManagement customerManagement) {
-        if (customerManagement.getSizeCustomerStory() == 0){
+    private void doUpdateCustomerBuyStory(IOrderBuyStoryManagement orderBuyStoryManagement, IStoryManagement storyManagement,
+                                          ISaveOrderBuyStoryManagement saveOrderBuyStoryManagement) {
+        System.out.println("----Cập nhật đơn hàng----");
+        int choiceUpdate = -1;
+        do {
+            System.out.println("1. Thay đổi số lượng, truyện muốn mua.");
+            System.out.println("2. Xóa bớt truyện muốn mua.");
+            System.out.println("0. Quay lại.");
+            System.out.println("Nhập lựa chọn của bạn: ");
+            choiceUpdate = inputNumber.nextInt();
+            if (choiceUpdate > 2) {
+                System.out.println("Menu chỉ có từ 1 - 3!");
+            }
+            switch (choiceUpdate) {
+                case 1: {
+                    doShowOrderStory(orderBuyStoryManagement);
+                    System.out.println("Nhập mã số truyện: ");
+                    String id = inputString.nextLine();
+                    int index = orderBuyStoryManagement.findById(id);
+
+                    if (index == -1) {
+                        System.err.println("Mã số truyện không đúng!");
+                    } else {
+                        CustomerBuyStory newCustomerBuyStory = creatOrderStory(storyManagement, orderBuyStoryManagement);
+                        orderBuyStoryManagement.update(index,newCustomerBuyStory);
+                        saveOrderBuyStoryManagement.update(index,newCustomerBuyStory);
+                        doShowOrderStory(orderBuyStoryManagement);
+                    }
+                    break;
+                }
+                case 2: {
+                    doShowOrderStory(orderBuyStoryManagement);
+                    System.out.println("Nhập mã số truyện: ");
+                    String id = inputString.nextLine();
+                    int index = orderBuyStoryManagement.findById(id);
+
+                    if (index == -1) {
+                        System.err.println("Mã số truyện không đúng!");
+                    } else {
+                        orderBuyStoryManagement.remove(index);
+                        saveOrderBuyStoryManagement.remove(index);
+                        System.out.println("Đã xóa thành công!");
+                    }
+                    break;
+                }
+
+            }
+        } while (choiceUpdate != 0);
+    }
+
+    private void doShowOrderStory(IOrderBuyStoryManagement orderBuyStoryManagement) {
+        if (orderBuyStoryManagement.getSize() == 0){
             System.out.println("Không có đơn hàng nào!");
         }else {
             System.out.println("----ĐƠN HÀNG CỦA BẠN----");
-            customerManagement.displayCustomerBuyStory();
-            int totalPayMoney = customerManagement.totalPayMoneyCustomerBuyStory();
+            orderBuyStoryManagement.displayAll();
+            int totalPayMoney = orderBuyStoryManagement.totalPayMoney();
             System.out.println("Tổng số tiền phải thanh toán là: " + totalPayMoney + "(VND.)");
         }
 
     }
 
-    private void doOrderStory(ICustomerManagement customerManagement, IStoryManagement storyManagement) {
+    private void doOrderStory(IOrderBuyStoryManagement orderBuyStoryManagement, IStoryManagement storyManagement,ISaveOrderBuyStoryManagement saveOrderBuyStoryManagement) {
         System.out.println("----Đặt mua truyện----");
-        customerManagement.clearCustomerBuyStory();
+        orderBuyStoryManagement.clear();
         int choiceBuy = -1;
         while (true) {
             System.out.println("----DANH SÁCH TRUYỆN CỦA CỬA HÀNG----");
@@ -159,30 +197,24 @@ public class CustomerManagementmenu {
                     if (quanlity > quanlityStory) {
                         System.err.println("Số lượng sách trong kho không đủ!");
                     } else {
-                        int payMoney = customerManagement.payMoneyCustomerBuyStory(index, quanlity);
+                        int payMoney = orderBuyStoryManagement.payMoney(index, quanlity);
                         Story story = storyManagement.getByIndex(index);
                         CustomerBuyStory customerBuyStory = new CustomerBuyStory(story, quanlity, payMoney);
-                        customerManagement.addCustomerBuyStory(customerBuyStory);
+                        orderBuyStoryManagement.add(customerBuyStory);
                         System.out.println("----GIỎ HÀNG CỦA BẠN----");
-                        customerManagement.displayCustomerBuyStory();
-                        int totalPayMoney = customerManagement.totalPayMoneyCustomerBuyStory();
-                        OrderStory orderStory = new OrderStory(story, quanlity, payMoney);
-                        customerManagement.addOrderStory(orderStory);
+                        orderBuyStoryManagement.displayAll();
+                        int totalPayMoney = orderBuyStoryManagement.totalPayMoney();
                         System.out.println("Tổng số tiền phải trả là: " + totalPayMoney + "(VND)");
-                        System.out.println("Nhập số 1 đẻ tiếp tục mua hàng, số 0 đẻ thoát!");
-                        int newQuanlity = storyManagement.getByIndex(index).getQuanlity() - quanlity;
+                        int newQuanlity = quanlityStory - quanlity;
                         storyManagement.getByIndex(index).setQuanlity(newQuanlity);
-                        doWriteFileOrderStory(customerManagement);
-                        doWriteFileCustomerBuyStory(customerManagement);
+                        saveOrderBuyStoryManagement.add(customerBuyStory);
                     }
                 }
-            } else {
-                System.err.println("Chọn '1' để 'MUA' hoặc '0' để 'THOÁT'!");
             }
         }
     }
 
-    private CustomerBuyStory creatOrderStory(IStoryManagement storyManagement, ICustomerManagement customerManagement) {
+    private CustomerBuyStory creatOrderStory(IStoryManagement storyManagement, IOrderBuyStoryManagement orderBuyStoryManagement) {
 
         System.out.println("----Danh sách truyện của cửa hàng----");
         storyManagement.displayAll();
@@ -201,76 +233,21 @@ public class CustomerManagementmenu {
             if (quanlity > quanlityStory) {
                 System.err.println("Số lượng sách trong kho không đủ!");
             } else {
-                payMoney = customerManagement.payMoneyCustomerBuyStory(index, quanlity);
+                payMoney = orderBuyStoryManagement.payMoney(index,quanlity);
                 story = storyManagement.getByIndex(index);
-
             }
         }
         return new CustomerBuyStory(story, quanlity, payMoney);
     }
-
-
-    private void doWriteFileOrderStory(ICustomerManagement customerManagement) {
-        try {
-            customerManagement.writeFileOrderStory("orderStory.txt");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void doWriteFileCustomerBuyStory(ICustomerManagement customerManagement) {
-        try {
-            customerManagement.WriteFileCustomerBuyStory("customerBuyStory.txt");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void doReadFileCustomerBuyStory(ICustomerManagement customerManagement) {
-        try {
-            customerManagement.readFileCustomerBuyStory("customerBuyStory.txt");
-        } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void doClearCustomerByAppointment(ICustomerManagement customerManagement) {
-        System.out.println("---Xóa hết lịch sử đặt hẹn thuê truyện----");
-        customerManagement.clearAllCustomerAppointment();
-    }
-
-    private void doReadFileCustomerByAppointment(ICustomerManagement customerManagement) {
-        try {
-            customerManagement.readFileCustomerByAppointment("customerByAppointment.txt");
-        } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void doReadFileStory(IStoryManagement storyManagement) {
-        try {
-            storyManagement.readFile("story.txt");
-        } catch (IOException | ClassNotFoundException e) {
-        }
-    }
-
-    private void writeFileCustomerByAppointment(ICustomerManagement customerManagement) {
-        try {
-            customerManagement.writeFileCustomerByAppointment("customerByAppointment.txt");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void doShowAllHistoryOrder(ICustomerManagement customerManagement) {
+    private void doShowAllHistoryOrder(IOrderRentStoryManagement orderRentStoryManagement) {
         System.out.println("----Lịch sử đặt hẹn thuê sách----");
-        customerManagement.displayAllCustomerByAppointment();
+        orderRentStoryManagement.displayAll();
     }
 
-    private void doOrder(ICustomerManagement customerManagement) {
+    private void doOrder(IOrderRentStoryManagement orderRentStoryManagement) {
         System.out.println("----Đặt hẹn thuê sách----");
         CustomersByAppointment newCustomer = inputNewCustomerByAppointmentInfo();
-        customerManagement.addNewCustomerByAppointment(newCustomer);
+        orderRentStoryManagement.add(newCustomer);
         System.out.println("Bạn đã đặt lịch hẹn thành công!");
     }
 
@@ -285,14 +262,14 @@ public class CustomerManagementmenu {
     }
 
     private void menu() {
-        System.out.println("----CỬA HÀNG CHO THUÊ TRUYỆN CODEGYM----");
+        System.out.println("----CỬA HÀNG BÁN & CHO THUÊ TRUYỆN CODEGYM----");
         System.out.println("1. Bảng giá của cửa hàng.");
-        System.out.println("2. Đặt mua sách.");
-        System.out.println("3. Kiểm tra đơn hàng.");
-        System.out.println("4. Cập nhật đơn hàng.");
-        System.out.println("5. Đặt hẹn thuê sách.");
-        System.out.println("6. Lịch sử đặt hẹn thuê sách.");
-        System.out.println("7. Xóa lịch sử đặt hẹn");
+        System.out.println("2. Hiển thị danh sách truyện.");
+        System.out.println("3. Đặt mua sách.");
+        System.out.println("4. Kiểm tra đơn hàng.");
+        System.out.println("5. Cập nhật đơn hàng.");
+        System.out.println("6. Đặt hẹn thuê sách.");
+        System.out.println("7. Lịch sử đặt hẹn thuê sách.");
         System.out.println("0. Thoát.");
     }
 

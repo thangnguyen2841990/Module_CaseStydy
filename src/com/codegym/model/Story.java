@@ -52,6 +52,6 @@ public class Story implements Serializable {
 
     @Override
     public String toString() {
-        return "ID: " + this.id + ", " + this.name;
+        return  "Mã số truyện: "+this.id +", "+ this.name;
     }
 }

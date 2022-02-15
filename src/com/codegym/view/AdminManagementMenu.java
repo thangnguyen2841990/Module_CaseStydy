@@ -35,7 +35,7 @@ public class AdminManagementMenu {
     }
 
     private void menu() {
-        System.out.println("----CỬA HÀNG CHO THUÊ TRUYỆN CODEGYM----");
+        System.out.println("----CỬA HÀNG BÁN & CHO THUÊ TRUYỆN CODEGYM----");
         System.out.println("1. Quản lý tài khoản của nhân viên");
         System.out.println("2. Quản lý nhân viên.");
         System.out.println("3. Quản lý cửa hàng.");
